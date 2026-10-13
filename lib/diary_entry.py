@@ -8,12 +8,17 @@ class DiaryEntry:
     def __init__(self, title, contents): # title, contents are strings
         # Side-effects:
         #   Sets the title and contents properties
-        pass
+        self.title = title
+        self.contents = contents
+        self.progress = 0
 
     def count_words(self):
         # Returns:
         #   An integer representing the number of words in the contents
-        pass
+        if len(self.contents) > 0:
+            return len(self.contents.split())
+        else:
+            return 0
 
     def reading_time(self, wpm):
         # Parameters:
@@ -22,7 +27,7 @@ class DiaryEntry:
         # Returns:
         #   An integer representing an estimate of the reading time in minutes
         #   for the contents at the given wpm.
-        pass
+        return self.count_words() / wpm
 
     def reading_chunk(self, wpm, minutes):
         # Parameters:
@@ -36,4 +41,9 @@ class DiaryEntry:
         # If called again, `reading_chunk` should return the next chunk,
         # skipping what has already been read, until the contents is fully read.
         # The next call after that it should restart from the beginning.
-        pass
+        if self.progress >= self.count_words(): #check if we have previouslt already reached end of text
+            self.progress = 0 #if not set progress to start of text
+        last_word = wpm * minutes + self.progress #calculates position of final word by adding number of words readable to current progress
+        chunk = self.contents.split()[self.progress:last_word] #previously for looped this and added to string, but this is simpler
+        self.progress += last_word - self.progress #Calculate change in progress by the difference between last word and previous progress. Note can result over length of text, but covered by line 46
+        return " ".join(chunk)
